@@ -3,6 +3,9 @@ package com.amigoscode.testing.customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class CustomerRegistrationService {
 
@@ -14,6 +17,21 @@ public class CustomerRegistrationService {
     }
 
     public void registerNewCustomer(CustomerRegistrationRequest request) {
+        String phoneNumber = request.getCustomer().getPhoneNumber();
 
+        Optional<Customer> optionalCustomer = customerRepository.selectCustomerByPhoneNumber(phoneNumber);
+
+        if (optionalCustomer.isPresent()) {
+            if (optionalCustomer.get().getId() == request.getCustomer().getId()) {
+                return;
+            }
+            throw new IllegalArgumentException(String.format("The phone number [%s] belongs to another customer.", phoneNumber));
+        }
+
+        if (request.getCustomer().getId() == null) {
+            request.getCustomer().setId(UUID.randomUUID());
+        }
+
+        customerRepository.save(request.getCustomer());
     }
 }
