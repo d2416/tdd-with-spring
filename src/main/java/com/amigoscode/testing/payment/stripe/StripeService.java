@@ -1,4 +1,4 @@
-package com.amigoscode.testing.stripe;
+package com.amigoscode.testing.payment.stripe;
 
 import com.amigoscode.testing.payment.CardPaymentCharge;
 import com.amigoscode.testing.payment.CardPaymentCharger;
@@ -41,7 +41,7 @@ public class StripeService implements CardPaymentCharger {
             Boolean paid = charge.getPaid();
             return new CardPaymentCharge(paid);
         } catch (StripeException e) {
-            throw new IllegalStateException("Cannot create a Strip charge", e);
+            throw new IllegalStateException("Cannot make Stripe charge", e);
         }
     }
 }
