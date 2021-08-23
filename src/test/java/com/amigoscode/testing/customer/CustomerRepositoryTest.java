@@ -3,6 +3,7 @@ package com.amigoscode.testing.customer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -10,7 +11,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@DataJpaTest
+@DataJpaTest( properties = {"spring.jpa.properties.javax.persistence.validation.mode=none"})
 class CustomerRepositoryTest {
 
     @Autowired
@@ -48,10 +49,10 @@ class CustomerRepositoryTest {
         // Given
         UUID id = UUID.randomUUID();
         Customer customer = new Customer(id, "Juan", "0000");
-        
+
         // When
         underTest.save(customer);
-        
+
         // Then
         Optional<Customer> optionalCustomer = underTest.findById(id);
         assertThat(optionalCustomer)
@@ -78,8 +79,8 @@ class CustomerRepositoryTest {
         // When
         // Then
         assertThatThrownBy(() -> underTest.save(customer))
-                .hasMessage("")
-                .isInstanceOf(Exception.class);
+                .hasMessageContaining("not-null property references a null or transient value : com.amigoscode.testing.customer.Customer.name")
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -91,7 +92,9 @@ class CustomerRepositoryTest {
         // When
         // Then
         assertThatThrownBy(() -> underTest.save(customer))
-                .hasMessage("")
-                .isInstanceOf(Exception.class);
+                .hasMessageContaining("not-null property references a null or transient value : com.amigoscode.testing.customer.Customer.phoneNumber")
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
+
+
 }
