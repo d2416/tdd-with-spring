@@ -1,12 +1,10 @@
 package com.amigoscode.testing.payment;
 
-import com.amigoscode.testing.customer.Customer;
 import com.amigoscode.testing.customer.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,13 +25,15 @@ public class PaymentService {
 
     public void chargeCard(UUID customerId, PaymentRequest paymentRequest) {
 
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalStateException(String.format("Customer does not exist for id [%s]", customerId)));
+        boolean isCustomerPresent = customerRepository.findById(customerId).isPresent();
+
+        if (!isCustomerPresent) {
+            throw new IllegalStateException(String.format("Customer does not exist for id [%s]", customerId));
+        }
 
         Payment payment = paymentRequest.getPayment();
 
-        boolean isCurrencyAccepted = ACCEPTED_CURRENCIES.contains(payment.getCurrency());
-        isCurrencyAccepted = ACCEPTED_CURRENCIES.stream().anyMatch(currency -> currency.equals(payment.getCurrency()));
+        boolean isCurrencyAccepted = ACCEPTED_CURRENCIES.stream().anyMatch(currency -> currency.equals(payment.getCurrency()));
 
         if (!isCurrencyAccepted) {
             throw new IllegalStateException(String.format("The currency [%s] is not accepted.", payment.getCurrency()));
