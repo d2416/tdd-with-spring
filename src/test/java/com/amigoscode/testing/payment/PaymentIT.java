@@ -38,7 +38,7 @@ public class PaymentIT {
         UUID customerId = UUID.randomUUID();
         Long paymentId = 1L;
 
-        Customer customer = new Customer(customerId, "Juan", "00000000");
+        Customer customer = new Customer(customerId, "Juan", "+33600000000");
 
         Payment payment = new Payment(paymentId, customerId, new BigDecimal("10.00"),
                 Currency.EUR, "source", "destination");
